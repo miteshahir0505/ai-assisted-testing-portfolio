@@ -1,8 +1,10 @@
 # Exploratory Testing: Cart & Checkout
 
 **Built using:** [Prompt 5 (exploratory testing charters)](../02-prompt-library/prompts.md#5-exploratory-testing-charters) from my prompt library.
+
 **Feature explored:** Adding/removing items, sorting, and checkout on saucedemo.com.
-**Session length:** [TODO: fill in once run, e.g., 45 min]
+
+**Session length:** ~40 minutes
 
 ## Prompt input
 
@@ -19,6 +21,7 @@ completing an order.
 ## AI-generated charters (unedited)
 
 > **Charter 1 — Explore adding/removing items with rapid repeated actions to discover state inconsistencies**
+
 > Time box: 30 min
 > - What if I add the same item twice quickly?
 > - What if I remove an item, then immediately re-add it before the UI updates?
@@ -28,6 +31,7 @@ completing an order.
 > Main risk: cart count or contents becoming out of sync with what's actually in the cart.
 >
 > **Charter 2 — Explore sorting with edge-case interactions to discover display bugs**
+
 > Time box: 20 min
 > - What if I sort by price low-to-high, then immediately sort by name Z-A?
 > - What if I sort, then add an item to the cart — does the sort order survive?
@@ -37,6 +41,7 @@ completing an order.
 > Main risk: the product list losing or duplicating items, or resetting sort unexpectedly.
 >
 > **Charter 3 — Explore checkout form with unusual and interrupted input to discover validation gaps**
+
 > Time box: 30 min
 > - What if I enter only whitespace in the name fields?
 > - What if I go back from the overview page and change my cart, then continue?
@@ -46,6 +51,7 @@ completing an order.
 > Main risk: an order being placed with invalid/incomplete data, or a duplicate order.
 >
 > **Charter 4 — Explore cart state across navigation and session boundaries to discover persistence bugs**
+
 > Time box: 20 min
 > - What if I add items, log out, then log back in — is the cart preserved?
 > - What if I add items as one user, log out, and log in as a different user?
@@ -55,6 +61,7 @@ completing an order.
 > Main risk: cart contents leaking between users, or checkout proceeding with an empty cart.
 >
 > **Charter 5 — Explore the order total and math with varied cart contents to discover calculation bugs**
+
 > Time box: 20 min
 > - What if I add every available product and check whether the total matches the sum?
 > - What if I add one item, remove it, add it back, and check the total each time?
@@ -71,33 +78,31 @@ I picked the two most realistic-risk charters to actually run, given limited tim
 
 ## Session notes
 
-[TODO: fill in as you run Charter 1 and Charter 5 — or any others]
-
 ### Charter 1: Adding/removing items — session notes
 
 | What if... | What happened |
 |---|---|
-| Add the same item twice quickly | [TODO] |
-| Remove then immediately re-add before UI updates | [TODO] |
-| Add all items, remove in a different order | [TODO] |
-| Add an item, refresh the page | [TODO] |
+| Add the same item twice quickly | Not actually possible to trigger — after the first click, the **Add to cart** button immediately becomes a **Remove** button, so a second click removes the item instead of adding a duplicate. The UI prevents this case by design. |
+| Remove then immediately re-add before UI updates | No race condition observed. The cart badge correctly shows `1` (or disappears entirely when empty) and the button reliably toggles between **Add to cart** and **Remove** on each click, with no lag or stuck state. |
+| Add all items, remove in a different order | Cart count decreased correctly every time, regardless of the order items were removed in. No item was left behind or double-counted. |
+| Add an item, refresh the page | The cart contents and count persisted correctly after a full page refresh — no reset to empty. |
 
-**Bugs/observations found:** [TODO]
+**Bugs/observations found:** None. Cart add/remove state handling is solid — no desync between the displayed count and actual cart contents under any of these conditions, and the UI's Add↔Remove toggle prevents the double-add scenario by design rather than needing extra validation.
 
 ### Charter 5: Order total and math — session notes
 
 | What if... | What happened |
 |---|---|
-| Add every product, check total vs. sum | [TODO] |
-| Add, remove, re-add same item — total each time | [TODO] |
-| Most expensive + least expensive only | [TODO] |
-| Tax rate consistent across different totals | [TODO] |
+| Add every product, check total vs. sum | The checkout overview page lists each item's individual price alongside the overall total for all selected items. Individual prices were visible and consistent with what was shown on the product list. |
+| Add, remove, re-add the same item — total each time | Price stayed consistent across remove/re-add — no drift or rounding change. **Observation:** removing an item from the checkout overview page and then re-adding it causes that item to reappear at the **bottom of the list** rather than its original position. Not a pricing bug, but a minor ordering inconsistency worth noting. |
+| Most expensive + least expensive only | Not run as an isolated case this session — general pricing behavior was already confirmed consistent across the other two checks, so this was deprioritized given time. Flagged to run in a future session. |
+| Tax rate consistent across different totals | Confirmed consistent. Tax scaled up and down correctly as items were added or removed, in line with a fixed percentage of the item total rather than a flat amount. |
 
-**Bugs/observations found:** [TODO]
+**Bugs/observations found:** One minor UX observation — an item removed and re-added during checkout moves to the bottom of the item list instead of staying in its original position. No pricing or total-calculation bugs found; individual prices, the item total, and tax all stayed mathematically consistent throughout.
 
 ## Session summary
 
-- **Charters run:** [TODO — e.g., "1 and 5 of 5"]
-- **Time spent:** [TODO]
-- **Bugs found:** [TODO]
-- **Would I run the other charters?** [TODO — e.g., "Yes, Charter 4 next since cross-user cart leakage would be the most serious possible finding"]
+- **Charters run:** Charter 1 and Charter 5 (of 5). Charters 2, 3 and 4 not run.
+- **Time spent:** ~40 minutes 
+- **Bugs found:** None severity-worthy. One minor UX observation: re-added checkout items reorder to the bottom of the list rather than keeping their original position.
+- **Would I run the other charters?** Charter 4 (cart state across users/sessions) next — cross-user cart leakage would be the most serious possible finding on a real e-commerce site, more so than sorting (Charter 2) or checkout-interruption edge cases (Charter 3).
