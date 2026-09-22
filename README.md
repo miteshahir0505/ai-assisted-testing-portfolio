@@ -14,7 +14,7 @@ This repo shows how I use AI to test faster while still applying my own judgment
 | 4 | [Manual to automation](./04-manual-to-automation) | 3 executed manual test cases converted into Playwright scripts |
 
 ## Tools used
-Claude, ChatGPT, Gemini, Copilot (free tiers), GitHub
+Claude, ChatGPT, Gemini, Copilot (free tiers), Playwright, GitHub
 
 ## Note
 All examples use public practice apps (saucedemo.com) and made-up requirements. No confidential data.
