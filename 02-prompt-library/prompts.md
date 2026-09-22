@@ -56,7 +56,7 @@ User story:
 
 **Example input:** Login user story for saucedemo.com (see Project 1).
 
-**Example output:** [TODO: paste a short snippet or link to the result]
+**Example output:** Full result, comparison across 4 AI tools, and execution against the live site: [`01-test-case-generation/`](../01-test-case-generation)
 
 **What I check before trusting it:**
 - Are expected results exact and testable, or vague ("appropriate error")?
@@ -123,7 +123,23 @@ phone numbers.
 
 **Example input:** `Postal code: required, 6 digits, numeric only`
 
-**Example output:** [TODO: paste table]
+**Example output** (generated for SauceDemo's checkout postal code field, `Postal code: required, format unspecified`):
+
+| Value | Category | Why it is useful |
+|---|---|---|
+| `12345` | Valid | Standard numeric postal code |
+| `SW1A 1AA` | Valid | Non-US alphanumeric format, since the field's rules weren't specified |
+| *(empty)* | Invalid | Tests the "required" rule directly |
+| `   ` (spaces only) | Invalid | Tests whether whitespace is treated as empty |
+| `1` | Boundary | Shortest possible input |
+| `123456789012345678901234567890` | Boundary | Very long input, checks for a max-length limit or overflow |
+| `-12345` | Invalid | Negative number, tests numeric validation if any |
+| `12 345` | Edge | Internal spacing, common real-world formatting |
+| `!@#$%` | Special characters | Tests whether symbols are rejected or silently accepted |
+| `' OR '1'='1` | Security | SQL injection payload, checks the field isn't passed unsanitized to a query |
+| `<script>alert(1)</script>` | Security | Script injection payload, checks for output escaping |
+
+**What I checked before trusting it:** the AI correctly noted the field's exact rules weren't given, so it covered both a plain numeric format and a non-US alphanumeric one rather than assuming US-only ZIP codes. I did not execute these against SauceDemo's checkout — this is an unexecuted example kept here to show the prompt working, not a verified result. Before using it for real testing, I'd run it against the actual field and note which values the form actually accepts.
 
 **What I check before trusting it:** Do the "boundary" values really sit on the boundary of the stated rules? Are the valid values actually valid?
 
@@ -156,9 +172,9 @@ My notes:
 [paste rough notes]
 ```
 
-**Example input:** `logged in as standard_user, opened cart, removed item, count in header still shows 1, chrome, saucedemo`
+**Example input:** Real rough notes from testing a cookie-persistence observation in Project 1.
 
-**Example output:** [TODO: paste result]
+**Example output:** Full before/after, including how I adjusted the AI's severity rating: [`03-bug-reports-exploratory/bug_report_example.md`](../03-bug-reports-exploratory/bug_report_example.md)
 
 **What I check before trusting it:** Reproduce the steps exactly as written. Check that no invented details slipped in, and decide severity myself.
 
@@ -188,7 +204,7 @@ Feature description:
 
 **Example input:** Shopping cart and checkout on saucedemo.com.
 
-**Example output:** [TODO: paste charters]
+**Example output:** 5 AI-generated charters, 2 executed with real session notes: [`03-bug-reports-exploratory/exploratory_testing.md`](../03-bug-reports-exploratory/exploratory_testing.md)
 
 **What I check before trusting it:** Pick the 2-3 charters that match real risk, run them, and note which "what if" questions found something.
 
@@ -217,7 +233,18 @@ Test cases:
 
 **Example input:** The 29 final cases from Project 1, with "login page redesign" as the change.
 
-**Example output:** [TODO: paste grouping]
+**Example output** (run against the real 29 cases from Project 1, with "login page redesign, 2 hours available" as the context):
+
+**Must run (12 cases)** — core functional and security paths that a redesign is most likely to break:
+TC-01 (valid login), TC-06/TC-07 (invalid credentials), TC-08/TC-09 (empty fields), TC-11 (locked-out user), TC-21/TC-22 (SQL injection), TC-23 (password masking), TC-25 (direct URL access), TC-03 (Enter key — layout changes often break keyboard handlers), TC-28 (error message doesn't leak which field was wrong)
+
+**Should run (11 cases)** — boundary and edge cases, lower chance a redesign breaks them, but cheap to check:
+TC-02 (other users), TC-05 (retry after failure), TC-10 (both fields empty), TC-12 (locked-out + wrong password), TC-13/TC-14/TC-15 (whitespace), TC-16 (case sensitivity), TC-17/TC-18 (long input), TC-26 (back button after logout)
+
+**Can skip this cycle (6 cases)** — unlikely to be affected by a visual/layout change:
+TC-04 (autofill — browser feature, not app logic), TC-19/TC-20 (special characters/Unicode — backend validation, not UI), TC-24 (password not in URL — routing, not layout), TC-27 (cookie observation — session logic, not UI), TC-29 (repeated failed logins — backend rate-limiting, not UI)
+
+**What I checked before trusting it:** the grouping makes sense for a *layout* redesign specifically — if the change were instead "rewrote the authentication backend," I'd flag TC-19/20/24/27/29 as Must run and downgrade some UI-focused cases instead. The AI's risk reasoning is only as good as the "what changed" context it's given, so I re-ran this mentally for a backend-change scenario as a sanity check before trusting the first grouping.
 
 **What I check before trusting it:** Does the grouping match what I know about the product? I make the final call. AI only sees what I told it.
 
@@ -246,9 +273,9 @@ Page elements I inspected:
 [paste locators, e.g., username input: [data-test="username"]]
 ```
 
-**Example input:** TC-01 (valid login) from Project 1 with the locators found in the browser inspector.
+**Example input:** TC-01, TC-06 and TC-11 from Project 1, already manually executed with confirmed expected results.
 
-**Example output:** [TODO: link to the working script in `04-manual-to-automation`]
+**Example output:** [`04-manual-to-automation/login.spec.ts`](../04-manual-to-automation/login.spec.ts)
 
 **What I check before trusting it:** Run the script. Confirm it fails when the expected result is wrong (change an assertion and watch it break). Check that locators are real, since AI can invent them.
 
@@ -275,6 +302,23 @@ Data:
 
 **Example input:** The execution results table from Project 1.
 
-**Example output:** [TODO: paste report]
+**Example output** (generated from the real Project 1 execution results and the Project 3 bug report):
+
+> **Test Summary: SauceDemo Login Feature**
+>
+> **Scope tested:** Login with valid/invalid credentials, empty fields, locked-out accounts, whitespace and case handling, long and special-character input, SQL injection resistance, password masking, and unauthorized access to the inventory page (29 test cases total).
+>
+> **Results:** 28 of 29 passed. No failures. 2 items flagged for attention (see below).
+>
+> **Top items to know about:**
+> 1. **No account lockout after repeated failed logins.** Anyone can retry as many times as they want with no rate limit. Low urgency on a demo site, but this would be worth a real policy decision on a production login.
+> 2. **A cookie related to the inventory page isn't cleared on logout.** Retesting confirmed this does not allow unauthorized access — direct URL access and the browser Back button both correctly redirect to login after logout — but the leftover cookie itself hasn't been fully explained yet.
+> 3. **The "please log in first" message reads like an error, not a prompt.** Functionally correct, but the wording ("Epic sadface: you can only access...") could confuse a real user into thinking something broke.
+>
+> **Not tested:** Cart, checkout, and sorting functionality were out of scope for this cycle (see separate exploratory notes for partial coverage of those areas).
+>
+> **Recommendation:** Go. Core login security and validation are solid — no bypass was found under any tested condition, including SQL injection, forged input, and stale sessions. The two flagged items are minor and don't block release, but are worth a follow-up ticket each.
+
+**What I checked before trusting it:** every number and claim above traces back to the actual `final_test_cases.md` and `bug_report_example.md` files — the AI wasn't given anything to invent. I did tighten the "Recommendation" section myself; the first draft leaned slightly more cautious ("go, with monitoring") than the evidence supported, so I made the language match what was actually found rather than hedging by default.
 
 **What I check before trusting it:** Every number matches my results table, and the recommendation is one I would defend in a meeting.
