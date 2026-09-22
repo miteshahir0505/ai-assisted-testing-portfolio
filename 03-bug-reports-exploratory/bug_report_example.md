@@ -56,7 +56,9 @@ login page correctly, so no bypass happened. chrome, saucedemo.com.
 ## Final bug report (as I'd file it)
 
 **Title:** Stale cookie remains after logout on `/inventory.html` (no confirmed access impact)
+
 **Severity:** Low **Priority:** Low
+
 **Environment:** Chrome, https://www.saucedemo.com/
 
 **Steps to reproduce:**
@@ -67,6 +69,7 @@ login page correctly, so no bypass happened. chrome, saucedemo.com.
 5. Re-open DevTools → Application → Cookies and compare against step 3.
 
 **Expected:** All session-related cookies are cleared on logout.
+
 **Actual:** A cookie associated with `/inventory.html` remains after logout, while the username/session cookie is correctly cleared.
 
 **Impact assessment:** Retested by navigating directly to `/inventory.html` after logout (see TC-25) and via the browser Back button after logout (see TC-26) — both correctly redirect to the login page with an access-denied message. No evidence the leftover cookie grants any access on its own.
