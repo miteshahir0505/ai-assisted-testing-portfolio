@@ -51,5 +51,5 @@ Page elements I inspected:
 ## Outcome
 
 - **Manual execution time for these 3 cases (from Project 1):** a few minutes each, but has to be repeated by hand every time.
-- **Automation time (writing + review):** about [TODO] minutes for this first batch of 3.
+- **Automation time (writing + review):** about 20-25 minutes minutes for this first batch of 3.
 - **Lesson:** automating a test I've already manually verified is much safer than automating one I haven't run, because I already know exactly what "correct" looks like — including the exact error text, which is where AI most often guesses wrong.
