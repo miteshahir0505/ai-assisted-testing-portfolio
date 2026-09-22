@@ -93,7 +93,9 @@ Test cases:
 
 **Example input:** The ChatGPT output from Project 1 (40 cases).
 
-**Example output:** [TODO: paste findings]
+**Example output:** Full worked example, including my own check of whether the AI's review was accurate: [`example-2-test-case-review.md`](./example-2-test-case-review.md)
+
+**Quick summary:** the AI found real duplicates, vague expected results, and one genuine coverage gap (no case for a locked-out user with a wrong password — which turned out to be one of the most interesting findings once executed). It also missed things a human execution pass caught, like a case that referenced a second account without naming one, making it impossible to actually run.
 
 **What I check before trusting it:** Open each ID it flags and confirm the problem is real. AI reviewers can also invent problems.
 
