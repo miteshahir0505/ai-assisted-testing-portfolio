@@ -94,8 +94,8 @@ Full details and case-by-case traceability are in [`comparison.md`](./comparison
 
 ## 6. Outcome
 
-- **Time to write these cases manually (estimate):** [100] minutes
-- **Time with AI + my review and execution:** [60] minutes
+- **Time to write these cases manually (estimate):** ~90–120 minutes for 29 well-thought-out cases covering positive, negative, boundary, edge and security scenarios, if written from scratch without AI
+- **Time with AI + my review and execution:** ~2 hours total — running the prompt on 4 tools (~10 min), comparing and merging 103 cases into 29 (~45 min), and executing all 29 on the live site (~40–50 min)
 - **Lessons learned:**
   - More test cases does not mean better test cases; 103 raw cases collapsed to 29 once duplicates were removed, and only Gemini's smaller set had accurate expected results.
   - AI does not know application-specific details (messages, URLs, credentials, actual security behavior) unless told, so it fills gaps with guesses — some of which turned out wrong once tested.
