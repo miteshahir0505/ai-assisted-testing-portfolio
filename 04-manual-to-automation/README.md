@@ -43,13 +43,37 @@ Page elements I inspected:
 3. **No fixed waits.** The AI used Playwright's built-in auto-waiting (`expect(...).toBeVisible()`, `toHaveURL()`) rather than `page.waitForTimeout()`, which is the correct pattern — a hard-coded sleep would make the suite slower and flakier.
 4. **One assertion focus per test**, matching one manual test case each, rather than combining all three logins into a single giant test that would be harder to debug on failure.
 
-## What I have not yet done
+## What I have not yet done — and how to finish it
 
-- **Run these tests against the live site** to confirm they pass. This requires a local Node/Playwright environment, so the next step is: `npm init playwright@latest`, drop this spec file in, and run `npx playwright test`.
-- **Verify the actual `data-test` locator names** in DevTools rather than relying on public documentation of SauceDemo's structure.
+I generated and reviewed this script, but haven't executed it yet — that needs a local Node environment, which isn't available in the tool I used to build this repo. To run it yourself:
+
+```bash
+# 1. Create a new folder anywhere on your machine and open a terminal there
+mkdir saucedemo-playwright && cd saucedemo-playwright
+
+# 2. Install Playwright (this also installs browsers)
+npm init playwright@latest
+# When prompted: choose TypeScript, keep the default "tests" folder,
+# say yes to installing browsers
+
+# 3. Copy login.spec.ts from this repo into the new "tests" folder,
+#    replacing the example file Playwright created
+
+# 4. Run the tests
+npx playwright test
+
+# 5. See a readable report
+npx playwright show-report
+```
+
+If a test fails, the report will show exactly which locator or assertion didn't match — that's normal on a first run, and turning that failure into a fix is genuinely one of the more convincing things to show in an interview ("here's the bug in my first version, here's what I changed and why").
+
+**After running it, update this README with:**
+- Pass/fail result for each of the 3 tests
+- Any locator or assertion you had to fix, and why
 
 ## Outcome
 
 - **Manual execution time for these 3 cases (from Project 1):** a few minutes each, but has to be repeated by hand every time.
-- **Automation time (writing + review):** about 20-25 minutes minutes for this first batch of 3.
+- **Automation time (writing + review):** about 20–25 minutes for this first batch of 3 — reviewing the AI-generated script, checking that locators matched SauceDemo's known `data-test` attributes, and confirming the expected error text against my Project 1 execution notes rather than trusting the AI's first guess.
 - **Lesson:** automating a test I've already manually verified is much safer than automating one I haven't run, because I already know exactly what "correct" looks like — including the exact error text, which is where AI most often guesses wrong.
